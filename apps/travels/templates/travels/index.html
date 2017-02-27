@@ -1,0 +1,153 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Dashboard</title>
+        <meta name="description" content="Dashboard for Travel Buddy">
+        {% load staticfiles %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+   
+   <style>
+
+       body{
+           background-color:#eee;
+           
+       }
+       th {
+            background-color: #ADD8E6;
+            color: white;
+       }
+
+   </style>
+   
+   
+   
+    </head>
+    <body>
+
+
+<!---------------------------------------------------------------------------------------------------->
+
+        <div class="container">
+            <div class="row">
+
+<!---------------------------------------------------------------------------------------------------->
+
+                <div class="row">
+                    <div class="col-md-10"></div>
+
+                    <div class="col-md-2">
+                        <form action="{% url 'login_logout' %}" method="POST">
+                        {% csrf_token %}
+                        <input class="btn btn-default" type="submit" value="Logout">
+                        </form>
+                    </div>
+
+                </div>
+
+
+<!---------------------------------------------------------------------------------------------------->
+
+            <div class="row">
+                <div class="col-xs-18 col-md-12"><h1>Travel Buddy</h1></div>
+            </div>
+
+<!---------------------------------------------------------------------------------------------------->
+
+
+            <h3>Hi, {{ loggedin.name }}!</h3>
+            <h4>These are your trip schedules</h4>
+
+
+<!---------------------------------------------------------------------------------------------------->
+
+
+
+            <table class="table table-hover">
+
+                <th>
+                    <th>Destination</th>
+                    <th>Travel Start Date</th>
+                    <th>Travel End Date</th>
+                    <th>Plan</th>
+                    <th>Action</th>
+                </th>
+                {% for travel in loggedin.travelplanner.all %}
+                <tr>
+                    <td><a href="{% url 'travels_show' id=travel.id%}">{{ travel.destination }}</a></td>
+                    <td>{{ travel.travel_date_from }}</td>
+                    <td>{{ travel.travel_date_to }}</td>
+                    <td>{{ travel.description }}</td>
+                    <td><a href="{% url 'travels_remove' id=travel.id %}">Delete</a></td>
+                </tr>
+                {% endfor %}
+                {% for travel in loggedin.travelmaker.all  %}
+                <tr>
+                    <td><a href="{% url 'travels_show' id=travel.id%}">{{ travel.destination }} <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></a></td>
+                    <td>{{ travel.travel_date_from }}</td>
+                    <td>{{ travel.travel_date_to }}</td>
+                    <td>{{ travel.description }}</td>
+                    <td>Unjoin</td>
+                </tr>
+                {% endfor %}
+
+            </table>
+
+
+<!---------------------------------------------------------------------------------------------------->
+
+
+            <div class="row">
+                <div class="col-md-10"></div>
+                <div class="col-md-2">
+                    <form action="{% url 'travels_create' %}" method="POST">
+                    {% csrf_token %}
+                    <input class="btn btn-default" type="submit" value="Add Travel Plan">
+                    </form>
+                </div>
+            </div>
+
+
+<!---------------------------------------------------------------------------------------------------->
+
+
+            <h4>Travel Plans by Other Buddies <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></h4>
+            
+            
+            
+<!---------------------------------------------------------------------------------------------------->
+
+
+            
+            <table class="table table-hover">
+                <tr>
+                    <th>Name</th>
+                    <th>Destination</th>
+                    <th>Travel Start Date</th>
+                    <th>Travel End Date</th>
+                    <th>Action</th>
+                </tr>
+                {% for travel in trips_off %}
+                <tr>
+                    <td>{{ travel.travelplanner_id.name }}</td>
+                    <td><a href="{% url 'travels_show' id=travel.id%}">{{ travel.destination }}</td>
+                    <td>{{ travel.travel_date_from }}</td>
+                    <td>{{ travel.travel_date_to }}</td>
+                    <td><form action="{% url 'travels_join' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="destination" value="{{ travel.id}}">
+                    <input type="hidden" name="traveler" value="{{ loggedin.id }}">
+                    <input class="btn btn-default" type="submit" value="Join">
+                    </form></td>
+                </tr>
+                {% endfor %}
+            </table>
+
+
+
+<!---------------------------------------------------------------------------------------------------->
+
+
+
+        </div>
+    </body>
+</html>
